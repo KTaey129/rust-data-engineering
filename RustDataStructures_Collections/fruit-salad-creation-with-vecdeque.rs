@@ -31,44 +31,68 @@ fn main() {
 
     // User interaction to add fruits
     let mut input = String::new();
-    println!("Add fruits to the queue. Enter 'front fruit_name' or 'back fruit_name' (or 'exit' to quit):");
-    loop {
-        input.clear();
-        io::stdin().read_line(&mut input).unwrap();
-        let input = input.trim();
-        if input == "exit" {
-            break;
-        }
-        let parts: Vec<&str> = input.splitn(2, ' ').collect();
-        if parts.len() == 2{
-            match parts[0] {
-                "front" => fruit.push_front(parts[1]),
-                "back" => fruit.push_back(parts[1]),
-                _ => println!("Invalid input. Use 'front' or 'back' to add fruits.")
-            }
+    println!(
+        "Add fruits to the salad.
+        Enter 'front fruit_name' or 'back fruit_name' to add
+        fruits to the front or back of the salad respectively."
+    );
+
+    io::stdin().read_line(&mut input).unwrap();
+    let input = input.trim();
+
+    let parts: Vec<&str> = input.split_whitespace().collect();
+    if parts.len() != 2 {
+        println!("Invalid input. Try again.");
+    }
+    let fruit_name = parts[1];
+    match parts[0] {
+        "front" => fruit.push_front(fruit_name),
+        "back" => fruit.push_back(fruit_name),
+        _ => println!("Invalid input. Try again."),
+    }
+
+    // Print out the fruit salad
+    print!("Fruit Salad:");
+    for (i, item) in fruit.iter().enumerate() {
+        if i != fruit.len() - 1 {
+            print!("{}, ", item);
         }
         else {
-            println!("Invalid input. Use 'front fruit_name' or 'back fruit_name' to add fruits.");
+            println!("{}", item);
         }
-
     }
 
     // Chose a random fruit
-    let mut fruit: Vec<_> = fruit.into_iter().collect();
-    if let Some(random_fruit) = fruit.choose(&mut rng) {
-        println!("your random fruit: {}", random_fruit);
-    }
+    let fruit: Vec<_> = fruit.into_iter().collect();
+    let random_fruit = fruit.choose(&mut rng).unwrap();
+    println!("Random fruit: {}", random_fruit);
 
     // Remove from front or back
     let mut fruit: VecDeque<_> = fruit.into_iter().collect();
-    if let Some(removed) = fruit.pop_front() {
-        println!("Removed from front: {}", removed);
+    let mut choice: String = String::new();
+    println!("Remove from front or back?");
+    io::stdin().read_line(&mut choice).unwrap();
+    match choice.trim() {
+        "front" => {
+            let removed_fruit = fruit.pop_front().unwrap();
+            println!("Removed fruit from the front: {}", removed_fruit);
+        }
+        "back" => {
+            let removed_fruit = fruit.pop_back().unwrap();
+            println!("Removed fruit from the back: {}", removed_fruit);
+        }
+        _ => println!("Invalid choice."),
     }
 
     // Final state of the queue
-    println!("Final state of the queue:");
-    for item in &fruit {
-        println!("{}", item);
+    let fruit: Vec<_> = fruit.into_iter().collect();
+    println!("Fruit Salad:");
+    for (i, item) in fruit.iter().enumerate() {
+        if i != fruit.len() - 1 {
+            println!("{}, ", item);
+        } else {
+            println!("{}", item);
+        }
     }
 
     // // Convert it back to VecDeque
